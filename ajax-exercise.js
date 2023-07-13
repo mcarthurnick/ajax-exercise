@@ -26,9 +26,6 @@ function showWeather(evt) {
     `
     <p>${response.data}</p>
     `
-    
-    console.log('response', response.data)
-
   })
   .catch((error) => {
     console.log('error', error)
@@ -42,10 +39,28 @@ document.querySelector('#weather-button').addEventListener('click', showWeather)
 
 function orderCookies(evt) {
   evt.preventDefault();
-  const qty = document.getElementById('qty-field');
-  const type = document.getElementById('cookie-type-field')
+  const quantity = document.getElementById('qty-field').value;
+  const type = document.getElementById('cookie-type-field').value;
 
-  
+  let cookieBody = {
+    cookieType: type,
+    qty: quantity
+} 
+  axios.post('/order-cookies.json', cookieBody)
+  .then((response) => {
+      if(response.data.resultCode === "ERROR"){
+        document.getElementById('order-status').innerHTML =  
+        `
+        <p class="order-error">${response.data.message}</p>
+        `
+      } else {
+        document.getElementById('order-status').innerHTML = response.data.message
+      }
+  })
+  .catch((error) => {
+    console.log('error', error)
+    document.getElementById('order-status').classList.add("order-error")
+  })
   // TODO: Need to preventDefault here, because we're listening for a submit event!
   // TODO: show the result message after your form
   // TODO: if the result code is ERROR, make it show up in red (see our CSS!)
